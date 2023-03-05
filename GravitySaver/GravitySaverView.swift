@@ -12,21 +12,39 @@ class GravitySaverView: ScreenSaverView {
 //    var configController = GravityConfigController()
     
     var system: System!
-    
-    static func defaultSystem(frame: CGRect) -> System {
+            
+    static func genDefaultSystem(frame: CGRect) -> System {
         let system = System()
-        system.addInfluencer(Planet(pos: Vec2D(frame.midX, frame.midY), vel: Vec2D(), radius: 10, mass: 200, color: NSColor.yellow, fixed: true))
+        system.addInfluencer(Planet(pos: Vec2D(frame.midX, frame.midY), vel: Vec2D(), radius: 10, mass: 200, fixed: true))
         
+        func getRandomPos() -> Vec2D {
+            let margin = 100.0
+            let rXMin = margin, rXMax = frame.maxX - margin
+            let rYMin = margin, rYMax = frame.maxY - margin
+            return Vec2D(SSRandomFloatBetween(rXMin, rXMax), SSRandomFloatBetween(rYMin, rYMax))
+        }
+        
+        func getRandomVelocity(_ pos: Vec2D) -> Vec2D {
+            let middle = Vec2D(frame.midX, frame.midY)
+            let toCenter = middle - pos
+            // Clockwise rotate 90
+            var velocity = Vec2D(toCenter.y, -toCenter.x).unitVec()
+            // Randomize direction
+            velocity = velocity + Vec2D(SSRandomFloatBetween(-0.5, 0.5), SSRandomFloatBetween(-0.5, 0.5))
+            // Randomize speed
+            velocity = (velocity / sqrt(toCenter.module())) * 40 * SSRandomFloatBetween(0.7, 1.5)
+            return velocity
+        }
+
         let radius = 1.5
         let mass = 0.1
-        let color = NSColor.white
-        for _ in 0..<2000 {
-            let rXMin = frame.midX - 200.0, rXMax = frame.midX + 200.0
-            let rYMin = 150.0, rYMax = frame.midY - 100.0
+        for _ in 0..<3000 {
+            let pos = getRandomPos()
+            let vel = getRandomVelocity(pos)
             system.addPassiver(Planet(
-                pos: Vec2D(SSRandomFloatBetween(rXMin, rXMax), SSRandomFloatBetween(rYMin, rYMax)),
-                vel: Vec2D(SSRandomFloatBetween(0.5, 3), SSRandomFloatBetween(-0.1, 0.1)),
-                radius: radius, mass: mass, color: color, fixed: false
+                pos: pos,
+                vel: vel,
+                radius: radius, mass: mass, fixed: false
             ))
         }
         return system
@@ -34,7 +52,7 @@ class GravitySaverView: ScreenSaverView {
     
     override init?(frame: NSRect, isPreview: Bool) {
         super.init(frame: frame, isPreview: isPreview)
-        system = GravitySaverView.defaultSystem(frame: frame)
+        system = GravitySaverView.genDefaultSystem(frame: frame)
     }
     
 //    override var hasConfigureSheet: Bool {
@@ -47,18 +65,30 @@ class GravitySaverView: ScreenSaverView {
    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-        system = GravitySaverView.defaultSystem(frame: frame)
+        system = GravitySaverView.genDefaultSystem(frame: frame)
     }
     
     override func startAnimation() {
         super.startAnimation()
     }
-   
+    
+    
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
 
         // Draw the state
-        system.draw(self.bounds)
+        NSColor.black.setFill()
+        bounds.fill()
+
+        for planet in system.influencers {
+            NSColor.systemYellow.setFill()
+            planet.pos.toCircle(radius: planet.radius).fill()
+        }
+
+        for planet in system.passivers {
+            NSColor.white.setFill()
+            planet.pos.toCircle(radius: planet.radius).fill()
+        }
     }
     
     override func animateOneFrame() {

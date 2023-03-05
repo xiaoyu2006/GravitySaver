@@ -68,23 +68,16 @@ class Planet {
     var vel: Vec2D
     var radius: Double
     var mass: Double
-    var color: NSColor
     var fixed: Bool
     
-    init(pos: Vec2D, vel: Vec2D, radius: Double, mass: Double, color: NSColor, fixed: Bool) {
+    init(pos: Vec2D, vel: Vec2D, radius: Double, mass: Double, fixed: Bool) {
         self.pos = pos
         self.vel = vel
         self.radius = radius
         self.mass = mass
-        self.color = color
         self.fixed = fixed
     }
-    
-    func drawPoint() {
-        self.color.setFill()
-        self.pos.toCircle(radius: self.radius).fill()
-    }
-    
+
     func updatePosition(deltaTime: Double) {
         if fixed { return }
         self.pos = self.pos + (self.vel * deltaTime)
@@ -118,19 +111,6 @@ class System {
     
     func addPassiver(_ planet: Planet) {
         self.passivers.append(planet)
-    }
-    
-    func draw(_ bounds: NSRect) {
-        NSColor.black.setFill()
-        bounds.fill()
-        
-        for planet in self.influencers {
-            planet.drawPoint()
-        }
-        
-        for planet in self.passivers {
-            planet.drawPoint()
-        }
     }
     
     func update() {
