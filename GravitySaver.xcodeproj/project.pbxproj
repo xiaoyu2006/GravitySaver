@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D2D2131529B246F30082126C /* GravitySaverView.h in Headers */ = {isa = PBXBuildFile; fileRef = D2D2131429B246F30082126C /* GravitySaverView.h */; };
-		D2D2131729B246F30082126C /* GravitySaverView.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D2131629B246F30082126C /* GravitySaverView.m */; };
+		D246B43F29B425140042E09D /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D246B43E29B425140042E09D /* Preferences.swift */; };
+		D246B44129B42BAD0042E09D /* Simulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = D246B44029B42BAD0042E09D /* Simulation.swift */; };
+		D2D2131F29B2478A0082126C /* GravitySaverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D2131E29B2478A0082126C /* GravitySaverView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D246B43E29B425140042E09D /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		D246B44029B42BAD0042E09D /* Simulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Simulation.swift; sourceTree = "<group>"; };
 		D2D2131129B246F30082126C /* GravitySaver.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GravitySaver.saver; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2D2131429B246F30082126C /* GravitySaverView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GravitySaverView.h; sourceTree = "<group>"; };
-		D2D2131629B246F30082126C /* GravitySaverView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GravitySaverView.m; sourceTree = "<group>"; };
+		D2D2131E29B2478A0082126C /* GravitySaverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GravitySaverView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,8 +49,9 @@
 		D2D2131329B246F30082126C /* GravitySaver */ = {
 			isa = PBXGroup;
 			children = (
-				D2D2131429B246F30082126C /* GravitySaverView.h */,
-				D2D2131629B246F30082126C /* GravitySaverView.m */,
+				D2D2131E29B2478A0082126C /* GravitySaverView.swift */,
+				D246B43E29B425140042E09D /* Preferences.swift */,
+				D246B44029B42BAD0042E09D /* Simulation.swift */,
 			);
 			path = GravitySaver;
 			sourceTree = "<group>";
@@ -60,7 +63,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2D2131529B246F30082126C /* GravitySaverView.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -96,6 +98,7 @@
 				TargetAttributes = {
 					D2D2131029B246F30082126C = {
 						CreatedOnToolsVersion = 14.2;
+						LastSwiftMigration = 1420;
 					};
 				};
 			};
@@ -132,7 +135,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2D2131729B246F30082126C /* GravitySaverView.m in Sources */,
+				D2D2131F29B2478A0082126C /* GravitySaverView.swift in Sources */,
+				D246B44129B42BAD0042E09D /* Simulation.swift in Sources */,
+				D246B43F29B425140042E09D /* Preferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,18 +256,29 @@
 		D2D2131B29B246F30082126C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y46NWTBFRF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPrincipalClass = GravitySaverView;
+				INFOPLIST_KEY_NSPrincipalClass = GravitySaver.GravitySaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = top.ycao.GravitySaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Debug;
@@ -270,18 +286,28 @@
 		D2D2131C29B246F30082126C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y46NWTBFRF;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSPrincipalClass = GravitySaverView;
+				INFOPLIST_KEY_NSPrincipalClass = GravitySaver.GravitySaverView;
 				INSTALL_PATH = "$(HOME)/Library/Screen Savers";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = top.ycao.GravitySaver;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
 				WRAPPER_EXTENSION = saver;
 			};
 			name = Release;
