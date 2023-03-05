@@ -58,6 +58,10 @@ struct Vec2D {
         return Vec2D(lhs.x / rhs, lhs.y / rhs)
     }
     
+    func toCGPoint() -> CGPoint {
+        return CGPoint(x: self.x, y: self.y)
+    }
+    
     func toCircle(radius: Double) -> NSBezierPath {
         return NSBezierPath(ovalIn: NSRect(x: self.x - radius, y: self.y - radius, width: radius * 2, height: radius * 2))
     }
