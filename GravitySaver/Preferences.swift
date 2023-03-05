@@ -11,8 +11,8 @@ import ScreenSaver
 import OSLog
 
 struct Preferences {
-    @Storage(key: "CanvasColor", defaultValue: Color(nsColor: NSColor(red: 1, green: 0.0, blue: 0.5, alpha: 1.0)))
-    static var canvasColor: Color
+//    @Storage(key: "CanvasColor", defaultValue: Color(nsColor: NSColor(red: 1, green: 0.0, blue: 0.5, alpha: 1.0)))
+//    static var canvasColor: Color
 }
 
 // MARK: - Helpers

@@ -21,6 +21,11 @@ struct Vec2D {
         self.y = 0
     }
     
+    init(_ cgPoint: CGPoint) {
+        self.x = cgPoint.x
+        self.y = cgPoint.y
+    }
+    
     func module() -> Double {
         return sqrt(
             pow(self.x, 2) + pow(self.y, 2)
@@ -48,6 +53,7 @@ struct Vec2D {
         return Vec2D(lhs.x * rhs, lhs.y * rhs)
     }
     
+    
     static func / (lhs: Vec2D, rhs: Double) -> Vec2D {
         return Vec2D(lhs.x / rhs, lhs.y / rhs)
     }
@@ -63,17 +69,15 @@ class Planet {
     var radius: Double
     var mass: Double
     var color: NSColor
+    var fixed: Bool
     
-    init(pos: Vec2D, vel: Vec2D, radius: Double, mass: Double, color: NSColor) {
+    init(pos: Vec2D, vel: Vec2D, radius: Double, mass: Double, color: NSColor, fixed: Bool) {
         self.pos = pos
         self.vel = vel
         self.radius = radius
         self.mass = mass
         self.color = color
-    }
-    
-    convenience init(pos: Vec2D, radius: Double, mass: Double, color: NSColor) {
-        self.init(pos: pos, vel: Vec2D(), radius: radius, mass: mass, color: color)
+        self.fixed = fixed
     }
     
     func drawPoint() {
@@ -82,6 +86,7 @@ class Planet {
     }
     
     func updatePosition(deltaTime: Double) {
+        if fixed { return }
         self.pos = self.pos + (self.vel * deltaTime)
     }
     
@@ -102,25 +107,28 @@ class Planet {
 }
 
 class System {
-    var planets: [Planet] = []
-    var deltaTime: Double = 0.01
-    var G: Double = 1
+    var influencers: [Planet] = []
+    var passivers: [Planet] = []
+    var deltaTime: Double = 0.5
+    var G: Double = 10
     
-    static func defaultSystem() -> System {
-        let system = System()
-        system.addPlanet(Planet(pos: Vec2D(200, 200), radius: 20, mass: 1, color: NSColor.yellow))
-        return system
+    func addInfluencer(_ planet: Planet) {
+        self.influencers.append(planet)
     }
     
-    func addPlanet(_ planet: Planet) {
-        self.planets.append(planet)
+    func addPassiver(_ planet: Planet) {
+        self.passivers.append(planet)
     }
     
     func draw(_ bounds: NSRect) {
         NSColor.black.setFill()
         bounds.fill()
         
-        for planet in self.planets {
+        for planet in self.influencers {
+            planet.drawPoint()
+        }
+        
+        for planet in self.passivers {
             planet.drawPoint()
         }
     }
@@ -131,19 +139,15 @@ class System {
     }
     
     private func updateVelocity() {
-        for p1i in 0..<planets.count {
-            for p2i in 0..<planets.count {
-                if p1i != p2i {
-                    let p1 = planets[p1i]
-                    let p2 = planets[p2i]
-                    p1.applyPlanetGravity(planet: p2, G: G, deltaTime: deltaTime)
-                }
+        for influencer in influencers {
+            for passiver in passivers {
+                passiver.applyPlanetGravity(planet: influencer, G: G, deltaTime: deltaTime)
             }
         }
     }
     
     private func updatePosition() {
-        for planet in planets {
+        for planet in passivers {
             planet.updatePosition(deltaTime: deltaTime)
         }
     }
