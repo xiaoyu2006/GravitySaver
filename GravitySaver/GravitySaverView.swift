@@ -18,7 +18,7 @@ class GravitySaverView: ScreenSaverView {
         system.addInfluencer(Planet(pos: Vec2D(frame.midX, frame.midY), vel: Vec2D(), radius: 10, mass: 200, fixed: true))
         
         func getRandomPos() -> Vec2D {
-            let margin = 100.0
+            let margin = 250.0
             let rXMin = margin, rXMax = frame.maxX - margin
             let rYMin = margin, rYMax = frame.maxY - margin
             return Vec2D(SSRandomFloatBetween(rXMin, rXMax), SSRandomFloatBetween(rYMin, rYMax))
@@ -75,6 +75,11 @@ class GravitySaverView: ScreenSaverView {
     
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
+        
+        func getColor(vel: Vec2D) -> NSColor {
+            let multiplier = 1.0 / (vel.module() / 10.0 + 1.0)
+            return NSColor(red: 1.0 * multiplier, green: 1.0 * multiplier, blue: 1.0, alpha: 1.0)
+        }
 
         // Draw the state
         NSColor.black.setFill()
@@ -86,7 +91,7 @@ class GravitySaverView: ScreenSaverView {
         }
 
         for planet in system.passivers {
-            NSColor.white.setFill()
+            getColor(vel: planet.vel).setFill()
             planet.pos.toCircle(radius: planet.radius).fill()
         }
     }
