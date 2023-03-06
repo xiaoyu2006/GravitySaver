@@ -7,7 +7,16 @@
 
 import ScreenSaver
 
-let SIZE = 2000
+
+extension Vec2D {
+    func toCGPoint() -> CGPoint {
+        return CGPoint(x: self.x, y: self.y)
+    }
+    
+    func toCircle(radius: Double) -> NSBezierPath {
+        return NSBezierPath(ovalIn: NSRect(x: self.x - radius, y: self.y - radius, width: radius * 2, height: radius * 2))
+    }
+}
 
 class GravitySaverView: ScreenSaverView {
     
@@ -16,28 +25,51 @@ class GravitySaverView: ScreenSaverView {
     var system: System!
     var traces: [[Vec2D]]!
     
+    static let SIZE = 2000
+    
+    
     static func genDefaultSystem(frame: CGRect) -> System {
         let system = System()
-        system.addInfluencer(Planet(pos: Vec2D(frame.midX, frame.midY), vel: Vec2D(), radius: 10, mass: 200, fixed: true))
+        system.addInfluencer(Planet(pos: Vec2D(frame.midX - 20.0, frame.midY), vel: Vec2D(0, -2.0), radius: 8.0, mass: 100.0, fixed: false))
+        system.addInfluencer(Planet(pos: Vec2D(frame.midX + 20.0, frame.midY), vel: Vec2D(0, 2.0), radius: 8.0, mass: 100.0, fixed: false))
         
         func getRandomPos() -> Vec2D {
-            let margin = 250.0
+            let margin = 200.0
             let rXMin = margin, rXMax = frame.maxX - margin
             let rYMin = margin, rYMax = frame.maxY - margin
-            return Vec2D(SSRandomFloatBetween(rXMin, rXMax), SSRandomFloatBetween(rYMin, rYMax))
+            
+            var x = SSRandomFloatBetween(rXMin, rXMax)
+            var y = SSRandomFloatBetween(rYMin, rYMax)
+            
+            // Move away from center
+            let MIN_DIST = 100.0
+            let distXToCenter = x - frame.midX
+            let distYToCenter = y - frame.midY
+            if sqrt(pow(distXToCenter, 2) + pow(distYToCenter, 2)) < MIN_DIST {
+                if distXToCenter > 0.0 { x += MIN_DIST }
+                else { x -= MIN_DIST }
+                if distYToCenter > 0.0 { y += MIN_DIST }
+                else { y -= MIN_DIST }
+            }
+            
+            return Vec2D(x, y)
         }
         
         func getRandomVelocity(_ pos: Vec2D) -> Vec2D {
             let middle = Vec2D(frame.midX, frame.midY)
             let toCenter = middle - pos
             let dist = toCenter.module()
+            
             // Clockwise rotate 90
             var velocity = Vec2D(toCenter.y, -toCenter.x).unitVec()
+            
             // Randomize direction
-            velocity = velocity + Vec2D(SSRandomFloatBetween(-0.5, 0.5), SSRandomFloatBetween(-0.5, 0.5))
+            velocity = velocity + Vec2D(SSRandomFloatBetween(-0.3, 0.3), SSRandomFloatBetween(-0.3, 0.3))
+            
+            velocity = velocity * sqrt(1 / dist) * 44.0
             // Randomize speed
-            velocity = velocity * sqrt(1 / dist)
-                        * 44 * SSRandomFloatBetween(0.8, 1.2)
+            velocity = velocity * SSRandomFloatBetween(0.8, 1.2)
+            
             return velocity
         }
         
@@ -57,7 +89,7 @@ class GravitySaverView: ScreenSaverView {
     
     fileprivate func initSystem(_ frame: NSRect) {
         system = GravitySaverView.genDefaultSystem(frame: frame)
-        traces = [[Vec2D]](repeating: [], count: SIZE)
+        traces = [[Vec2D]](repeating: [], count: GravitySaverView.SIZE)
     }
     
     override init?(frame: NSRect, isPreview: Bool) {
@@ -103,6 +135,7 @@ class GravitySaverView: ScreenSaverView {
         for planetIndex in 0..<system.passivers.count {
             let planet = system.passivers[planetIndex]
             
+            // Update and draw traces
             traces[planetIndex].append(planet.pos)
             if traces[planetIndex].count > 6 {
                 traces[planetIndex].removeFirst()
@@ -120,9 +153,9 @@ class GravitySaverView: ScreenSaverView {
             path.lineWidth = 1.5
             path.stroke()
             
+            // Draw the planet itself
             getColor(vel: planet.vel).setFill()
             planet.pos.toCircle(radius: planet.radius).fill()
-            
         }
     }
     

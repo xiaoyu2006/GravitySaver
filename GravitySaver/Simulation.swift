@@ -57,14 +57,6 @@ struct Vec2D {
     static func / (lhs: Vec2D, rhs: Double) -> Vec2D {
         return Vec2D(lhs.x / rhs, lhs.y / rhs)
     }
-    
-    func toCGPoint() -> CGPoint {
-        return CGPoint(x: self.x, y: self.y)
-    }
-    
-    func toCircle(radius: Double) -> NSBezierPath {
-        return NSBezierPath(ovalIn: NSRect(x: self.x - radius, y: self.y - radius, width: radius * 2, height: radius * 2))
-    }
 }
 
 class Planet {
@@ -93,7 +85,12 @@ class Planet {
     
     func gravityTo(planet: Planet, G: Double) -> Vec2D {
         let posDiff = planet.pos - self.pos
-        let forceMagnitude = G * self.mass * planet.mass / pow(posDiff.module(), 2)
+        
+        let MIN_DIST = 40.0  // Nasty hack
+        var dist = posDiff.module()
+        if dist < MIN_DIST { dist = MIN_DIST }
+
+        let forceMagnitude = G * self.mass * planet.mass / pow(dist, 2)
         return posDiff.unitVec() * forceMagnitude
     }
     
@@ -123,6 +120,13 @@ class System {
     }
     
     private func updateVelocity() {
+        for i1 in influencers {
+            for i2 in influencers {
+                if i1 === i2 { continue }
+                i1.applyPlanetGravity(planet: i2, G: G, deltaTime: deltaTime)
+            }
+        }
+        
         for influencer in influencers {
             for passiver in passivers {
                 passiver.applyPlanetGravity(planet: influencer, G: G, deltaTime: deltaTime)
@@ -131,6 +135,10 @@ class System {
     }
     
     private func updatePosition() {
+        for planet in influencers {
+            planet.updatePosition(deltaTime: deltaTime)
+        }
+        
         for planet in passivers {
             planet.updatePosition(deltaTime: deltaTime)
         }
